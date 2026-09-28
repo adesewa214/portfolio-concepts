@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portfolio Concept: Academic Performance Dashboard (Fictional Data, Greensprings-inspired)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg-header:#1a2e4a; --accent:#2f5d9e; --accent-light:#e8eef7;
+    --bg-page:#f5f6f4; --bg-card:#ffffff; --text-primary:#1a2028;
+    --text-secondary:#6b7280; --text-on-dark:#ffffff;
+    --radius:12px; --gap:18px; --border:#e4e7e3;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg-page:#12161a; --bg-card:#1b2127; --text-primary:#f0f2ef;
+      --text-secondary:#a3aba5; --border:#2a3138; --accent-light:#1c2733;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-page:#12161a; --bg-card:#1b2127; --text-primary:#f0f2ef;
+    --text-secondary:#a3aba5; --border:#2a3138; --accent-light:#1c2733;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg-page);color:var(--text-primary);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 60px;}
+  header{background:linear-gradient(135deg,var(--bg-header),#0d1a30);color:var(--text-on-dark);
+    border-radius:var(--radius);padding:22px 26px;margin-bottom:var(--gap);
+    display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;}
+  header h1{margin:0 0 4px;font-size:20px;font-weight:700;}
+  header p{margin:0;font-size:13px;opacity:.82;max-width:560px;}
+  .sample-tag{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;}
+  .tabs{display:flex;gap:8px;margin-bottom:var(--gap);flex-wrap:wrap;}
+  .tab{padding:10px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg-card);
+    color:var(--text-secondary);font-size:13px;font-weight:600;cursor:pointer;}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .page{display:none;} .page.active{display:block;}
+  .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--gap);margin-bottom:var(--gap);}
+  .kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
+  .kpi-label{font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+  .kpi-value{font-size:24px;font-weight:700;}
+  .kpi-sub{font-size:12px;color:var(--accent);font-weight:600;margin-top:4px;}
+  .chart-row{display:grid;grid-template-columns:1.3fr 1fr;gap:var(--gap);margin-bottom:var(--gap);}
+  .chart-container{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+  .chart-container h3{margin:0 0 4px;font-size:14px;font-weight:600;}
+  .chart-container .sub{font-size:12px;color:var(--text-secondary);margin-bottom:12px;}
+  .chart-container canvas{max-height:260px;}
+  .full{grid-column:1/-1;}
+  footer{margin-top:10px;font-size:12px;color:var(--text-secondary);text-align:center;}
+  @media (max-width:760px){.chart-row{grid-template-columns:1fr;}.kpi-row{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Greensprings — Academic Performance Insights</h1>
+      <p>A sample cross-campus analysis structured after my JAMB Exam Result project, adapted to show how similar analysis could apply to Greensprings' admissions, assessment, and outcomes data.</p>
+    </div>
+    <span class="sample-tag">CONCEPT MOCKUP — not affiliated with or endorsed by Greensprings School</span>
+  </header>
+  <div style="background:var(--accent-light);border:1px solid var(--border);border-radius:var(--radius);padding:12px 18px;margin-bottom:var(--gap);font-size:12.5px;color:var(--text-secondary);">
+    <strong style="color:var(--text-primary);">Note:</strong> This is an independently prepared portfolio example built by Adesewa Adeleke to demonstrate a data-analysis approach. All figures shown are fictional/illustrative and do not represent real Greensprings School data, performance, or records. This page is not affiliated with, endorsed by, or sourced from Greensprings School in any way.
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-page="overview">Overview</div>
+    <div class="tab" data-page="learning">Student &amp; Learning Insights</div>
+    <div class="tab" data-page="external">External Factors</div>
+  </div>
+
+  <!-- PAGE 1: OVERVIEW -->
+  <section class="page active" id="page-overview">
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Students (Sample)</div><div class="kpi-value">2,480</div><div class="kpi-sub">Across 4 campuses</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg. Overall Score</div><div class="kpi-value">78.4%</div><div class="kpi-sub">+3.1 pts vs last session</div></div>
+      <div class="kpi-card"><div class="kpi-label">IB/IGCSE Pass Rate</div><div class="kpi-value">91%</div><div class="kpi-sub">Above national avg.</div></div>
+      <div class="kpi-card"><div class="kpi-label">Top Campus</div><div class="kpi-value">Ikoyi</div><div class="kpi-sub">82.1% avg. score</div></div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-container"><h3>Average Score Trend</h3><div class="sub">Sample, last 5 academic sessions</div><canvas id="trendChart"></canvas></div>
+      <div class="chart-container"><h3>Avg. Score by Campus</h3><div class="sub">Anthony, Lekki, Ikoyi, Awoyaya</div><canvas id="campusChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- PAGE 2: STUDENT & LEARNING INSIGHTS -->
+  <section class="page" id="page-learning">
+    <div class="chart-row">
+      <div class="chart-container"><h3>Average Score by Subject</h3><div class="sub">Sample subject-level breakdown</div><canvas id="subjectChart"></canvas></div>
+      <div class="chart-container"><h3>Score by Grade Level</h3><div class="sub">Year 7 – IB2</div><canvas id="gradeChart"></canvas></div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-container full"><h3>Attendance Rate vs. Average Score</h3><div class="sub">Sample relationship across student cohort</div><canvas id="attendanceChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- PAGE 3: EXTERNAL FACTORS -->
+  <section class="page" id="page-external">
+    <div class="chart-row">
+      <div class="chart-container"><h3>Score by Extracurricular Involvement</h3><div class="sub">Sample: none / moderate / high involvement</div><canvas id="extracurricularChart"></canvas></div>
+      <div class="chart-container"><h3>Score by Prior School Type</h3><div class="sub">Sample: internal feeder vs. external transfer</div><canvas id="priorSchoolChart"></canvas></div>
+    </div>
+  </section>
+
+  <footer>Independent portfolio piece by Adesewa Adeleke, structured after the JAMB Exam Result Analysis project. Fictional data — not affiliated with, endorsed by, or representing actual Greensprings School figures.</footer>
+</div>
+
+<script>
+const COLORS = ["#2f5d9e","#6f96c9","#c9a24b","#4aab7b","#a35d6a","#8a8f89"];
+
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("page-"+tab.dataset.page).classList.add("active");
+  });
+});
+
+new Chart(document.getElementById("trendChart"), {
+  type:"line",
+  data:{ labels:["2021/22","2022/23","2023/24","2024/25","2025/26"],
+    datasets:[{ label:"Avg. Score (%)", data:[71.2,73.5,75.0,76.8,78.4], borderColor:COLORS[0], backgroundColor:COLORS[0]+"22", tension:.3, fill:true }] },
+  options:{ responsive:true, animation:false, plugins:{ legend:{ display:false } } }
+});
+
+new Chart(document.getElementById("campusChart"), {
+  type:"bar",
+  data:{ labels:["Anthony","Lekki","Ikoyi","Awoyaya"],
+    datasets:[{ label:"Avg. Score (%)", data:[76.1,79.3,82.1,74.8], backgroundColor:COLORS[0], borderRadius:6 }] },
+  options:{ responsive:true, animation:false, plugins:{ legend:{ display:false } } }
+});
+
+new Chart(document.getElementById("subjectChart"), {
+  type:"bar",
+  data:{ labels:["Mathematics","English","Sciences","Humanities","Arts"],
+    datasets:[{ label:"Avg. Score (%)", data:[74,81,77,80,85], backgroundColor:COLORS[1], borderRadius:6 }] },
+  options:{ responsive:true, animation:false, plugins:{ legend:{ display:false } }, indexAxis:"y" }
+});
+
+new Chart(document.getElementById("gradeChart"), {
+  type:"line",
+  data:{ labels:["Yr7","Yr8","Yr9","Yr10","Yr11","IB1","IB2"],
+    datasets:[{ label:"Avg. Score (%)", data:[80,79,77,75,78,81,84], borderColor:COLORS[2], backgroundColor:COLORS[2]+"22", tension:.3, fill:true }] },
+  options:{ responsive:true, animation:false, plugins:{ legend:{ display:false } } }
+});
+
+new Chart(document.getElementById("attendanceChart"), {
+  type:"scatter",
+  data:{ datasets:[{ label:"Student (sample)",
+    data:Array.from({length:40},()=> {
+      const att = 70+Math.random()*30;
+      const score = 50 + (att-70)*1.1 + (Math.random()*10-5);
+      return {x:Math.round(att), y:Math.round(Math.max(40,Math.min(98,score)))};
+    }), backgroundColor:COLORS[3] }] },
+  options:{ responsive:true, animation:false,
+    scales:{ x:{ title:{ display:true, text:"Attendance Rate (%)" } }, y:{ title:{ display:true, text:"Avg. Score (%)" } } },
+    plugins:{ legend:{ display:false } } }
+});
+
+new Chart(document.getElementById("extracurricularChart"), {
+  type:"bar",
+  data:{ labels:["None","Moderate","High"],
+    datasets:[{ label:"Avg. Score (%)", data:[72.4,77.9,83.6], backgroundColor:COLORS[4], borderRadius:6 }] },
+  options:{ responsive:true, animation:false, plugins:{ legend:{ display:false } } }
+});
+
+new Chart(document.getElementById("priorSchoolChart"), {
+  type:"doughnut",
+  data:{ labels:["Internal Feeder (Creche/Elementary)","External Transfer"],
+    datasets:[{ data:[62,38], backgroundColor:[COLORS[0],COLORS[2]] }] },
+  options:{ responsive:true, animation:false, plugins:{ legend:{ position:"bottom" } } }
+});
+</script>
+</body>
+</html>

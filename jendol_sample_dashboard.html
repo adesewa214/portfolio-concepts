@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portfolio Concept: Branch Performance Dashboard (Fictional Data, Jendol-inspired)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg-header:#1c3d2e;
+    --accent:#2f7d4f;
+    --accent-light:#e7f3ec;
+    --bg-page:#f5f6f4;
+    --bg-card:#ffffff;
+    --text-primary:#1a2420;
+    --text-secondary:#6b7570;
+    --text-on-dark:#ffffff;
+    --positive:#2f7d4f;
+    --negative:#c0392b;
+    --radius:12px;
+    --gap:18px;
+    --border:#e4e7e3;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg-page:#12161a; --bg-card:#1b2127; --text-primary:#f0f2ef;
+      --text-secondary:#a3aba5; --border:#2a3138; --accent-light:#1e2b23;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-page:#12161a; --bg-card:#1b2127; --text-primary:#f0f2ef;
+    --text-secondary:#a3aba5; --border:#2a3138; --accent-light:#1e2b23;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg-page); color:var(--text-primary);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 60px;}
+  header{
+    background:linear-gradient(135deg,var(--bg-header),#0f2a1e);
+    color:var(--text-on-dark); border-radius:var(--radius);
+    padding:22px 26px; margin-bottom:var(--gap);
+    display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;
+  }
+  header h1{margin:0 0 4px; font-size:21px; font-weight:700;}
+  header p{margin:0; font-size:13px; opacity:.8; max-width:520px;}
+  .sample-tag{
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25);
+    padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap;
+  }
+  .filters{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:var(--gap);}
+  select{
+    padding:9px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg-card); color:var(--text-primary); font-size:13px;
+  }
+  .kpi-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:var(--gap); margin-bottom:var(--gap);}
+  .kpi-card{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px;}
+  .kpi-label{font-size:12px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;}
+  .kpi-value{font-size:26px; font-weight:700;}
+  .kpi-change{font-size:12px; font-weight:600; margin-top:4px;}
+  .kpi-change.positive{color:var(--positive);}
+  .kpi-change.negative{color:var(--negative);}
+  .chart-row{display:grid; grid-template-columns:1.4fr 1fr; gap:var(--gap); margin-bottom:var(--gap);}
+  .chart-container{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px;}
+  .chart-container h3{margin:0 0 4px; font-size:14px; font-weight:600;}
+  .chart-container .sub{font-size:12px; color:var(--text-secondary); margin-bottom:12px;}
+  .chart-container canvas{max-height:270px;}
+  .table-section{background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{text-align:left; padding:9px 10px; border-bottom:2px solid var(--border); color:var(--text-secondary); font-size:11px; text-transform:uppercase; letter-spacing:.4px;}
+  td{padding:9px 10px; border-bottom:1px solid var(--border);}
+  tr.highlight td{background:var(--accent-light); font-weight:600;}
+  .pill{font-size:11px; padding:2px 8px; border-radius:10px; background:var(--accent-light); color:var(--accent); font-weight:600;}
+  footer{margin-top:18px; font-size:12px; color:var(--text-secondary); text-align:center;}
+  @media (max-width:760px){ .chart-row{grid-template-columns:1fr;} .kpi-row{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Jendol Superstores — Branch Performance Overview</h1>
+      <p>Illustrative concept dashboard built with sample data to demonstrate how branch, category, and customer-retention analysis could support Jendol's expansion decisions.</p>
+    </div>
+    <span class="sample-tag">CONCEPT MOCKUP — not affiliated with or endorsed by Jendol Superstores</span>
+  </header>
+  <div style="background:var(--accent-light);border:1px solid var(--border);border-radius:var(--radius);padding:12px 18px;margin-bottom:var(--gap);font-size:12.5px;color:var(--text-secondary);">
+    <strong style="color:var(--text-primary);">Note:</strong> This is an independently prepared portfolio example built by Adesewa Adeleke to demonstrate a data-analysis approach. All figures shown are fictional/illustrative and do not represent real Jendol Superstores data, sales, or records. This page is not affiliated with, endorsed by, or sourced from Jendol Superstores in any way.
+  </div>
+
+  <div class="filters">
+    <select id="regionFilter">
+      <option value="all">All Regions</option>
+      <option value="Lagos">Lagos</option>
+      <option value="Ogun">Ogun</option>
+    </select>
+    <select id="periodFilter">
+      <option value="all">Last 6 Months</option>
+      <option value="last3">Last 3 Months</option>
+    </select>
+  </div>
+
+  <section class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Revenue</div>
+      <div class="kpi-value" id="kpiRevenue">₦0</div>
+      <div class="kpi-change positive" id="kpiRevenueChange">+0%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Total Orders</div>
+      <div class="kpi-value" id="kpiOrders">0</div>
+      <div class="kpi-change positive" id="kpiOrdersChange">+0%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Avg. Order Value</div>
+      <div class="kpi-value" id="kpiAOV">₦0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Repeat Customer Rate</div>
+      <div class="kpi-value" id="kpiRepeat">0%</div>
+      <div class="kpi-change positive">Highest at Abraham Adesanya</div>
+    </div>
+  </section>
+
+  <section class="chart-row">
+    <div class="chart-container">
+      <h3>Monthly Revenue Trend by Region</h3>
+      <div class="sub">Sample 6-month trend, Lagos vs Ogun branches</div>
+      <canvas id="trendChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h3>Revenue Share by Product Category</h3>
+      <div class="sub">Skincare, household, groceries &amp; more</div>
+      <canvas id="categoryChart"></canvas>
+    </div>
+  </section>
+
+  <section class="chart-row">
+    <div class="chart-container" style="grid-column: 1 / -1;">
+      <h3>Revenue by Branch (Selected Period)</h3>
+      <div class="sub">Abraham Adesanya highlighted as a top-performing branch in this sample</div>
+      <canvas id="branchChart"></canvas>
+    </div>
+  </section>
+
+  <section class="table-section">
+    <h3 style="margin-top:0;font-size:14px;">Branch Detail (Sample)</h3>
+    <table>
+      <thead>
+        <tr><th>Branch</th><th>Region</th><th>Revenue</th><th>Orders</th><th>Repeat Rate</th><th>Top Category</th></tr>
+      </thead>
+      <tbody id="branchTableBody"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    Independent portfolio piece by Adesewa Adeleke. Fictional data — not affiliated with, endorsed by, or representing actual Jendol Superstores figures.
+  </footer>
+</div>
+
+<script>
+const BRANCHES = [
+  { name: "Abraham Adesanya", region: "Lagos", revenue: 18200000, orders: 5400, repeat: 61, topCat: "Skincare" },
+  { name: "Egbeda", region: "Lagos", revenue: 15100000, orders: 4700, repeat: 52, topCat: "Groceries" },
+  { name: "Ipaja", region: "Lagos", revenue: 13950000, orders: 4300, repeat: 49, topCat: "Household" },
+  { name: "Alakuko", region: "Lagos", revenue: 11800000, orders: 3900, repeat: 47, topCat: "Groceries" },
+  { name: "Ifo", region: "Ogun", revenue: 9200000, orders: 3100, repeat: 41, topCat: "Household" },
+  { name: "Sango", region: "Ogun", revenue: 8600000, orders: 2900, repeat: 38, topCat: "Groceries" }
+];
+
+const TREND_MONTHS = ["Apr","May","Jun","Jul","Aug","Sep"];
+const TREND = {
+  Lagos: [38.2, 40.1, 41.5, 43.8, 45.2, 47.9],
+  Ogun:  [10.1, 11.0, 11.8, 13.2, 14.5, 15.6]
+};
+const CATEGORY = {
+  labels: ["Skincare & Personal Care","Groceries","Household Items","Electronics & Appliances","Other"],
+  values: [24, 33, 21, 14, 8]
+};
+
+const COLORS = ["#2f7d4f","#6fae86","#c9a24b","#4a7bab","#a35d6a","#8a8f89"];
+const fmtNaira = v => "₦" + (v >= 1e6 ? (v/1e6).toFixed(1)+"M" : v >= 1e3 ? (v/1e3).toFixed(0)+"K" : v);
+
+function computeAndRender(regionFilter, periodFilter){
+  const filtered = BRANCHES.filter(b => regionFilter === "all" || b.region === regionFilter);
+  const totalRevenue = filtered.reduce((s,b)=>s+b.revenue,0);
+  const totalOrders = filtered.reduce((s,b)=>s+b.orders,0);
+  const avgOrder = totalOrders ? totalRevenue/totalOrders : 0;
+  const avgRepeat = filtered.length ? (filtered.reduce((s,b)=>s+b.repeat,0)/filtered.length) : 0;
+
+  document.getElementById("kpiRevenue").textContent = fmtNaira(totalRevenue);
+  document.getElementById("kpiRevenueChange").textContent = "+9.4% vs prior period";
+  document.getElementById("kpiOrders").textContent = totalOrders.toLocaleString();
+  document.getElementById("kpiOrdersChange").textContent = "+6.1% vs prior period";
+  document.getElementById("kpiAOV").textContent = "₦" + Math.round(avgOrder).toLocaleString();
+  document.getElementById("kpiRepeat").textContent = avgRepeat.toFixed(0) + "%";
+
+  const tbody = document.getElementById("branchTableBody");
+  tbody.innerHTML = "";
+  filtered.sort((a,b)=>b.revenue-a.revenue).forEach(b=>{
+    const tr = document.createElement("tr");
+    if (b.name === "Abraham Adesanya") tr.className = "highlight";
+    tr.innerHTML = `<td>${b.name}${b.name==="Abraham Adesanya" ? ' <span class="pill">Your branch</span>' : ''}</td>
+      <td>${b.region}</td><td>${fmtNaira(b.revenue)}</td><td>${b.orders.toLocaleString()}</td>
+      <td>${b.repeat}%</td><td>${b.topCat}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  renderBranchChart(filtered);
+}
+
+let branchChartInstance, trendChartInstance, categoryChartInstance;
+
+function renderBranchChart(filtered){
+  const ctx = document.getElementById("branchChart").getContext("2d");
+  const labels = filtered.map(b=>b.name);
+  const data = filtered.map(b=>b.revenue);
+  const bg = filtered.map(b => b.name === "Abraham Adesanya" ? "#2f7d4f" : "#a9c9b6");
+  if (branchChartInstance) branchChartInstance.destroy();
+  branchChartInstance = new Chart(ctx, {
+    type: "bar",
+    data: { labels, datasets: [{ label: "Revenue", data, backgroundColor: bg, borderRadius: 6 }] },
+    options: {
+      responsive: true, animation: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { ticks: { callback: v => fmtNaira(v) } } }
+    }
+  });
+}
+
+function renderStaticCharts(){
+  const tctx = document.getElementById("trendChart").getContext("2d");
+  trendChartInstance = new Chart(tctx, {
+    type: "line",
+    data: {
+      labels: TREND_MONTHS,
+      datasets: [
+        { label: "Lagos (₦M)", data: TREND.Lagos, borderColor: COLORS[0], backgroundColor: COLORS[0]+"22", tension: .3, fill: true },
+        { label: "Ogun (₦M)", data: TREND.Ogun, borderColor: COLORS[3], backgroundColor: COLORS[3]+"22", tension: .3, fill: true }
+      ]
+    },
+    options: { responsive: true, animation: false, plugins: { legend: { position: "bottom" } } }
+  });
+
+  const cctx = document.getElementById("categoryChart").getContext("2d");
+  categoryChartInstance = new Chart(cctx, {
+    type: "doughnut",
+    data: { labels: CATEGORY.labels, datasets: [{ data: CATEGORY.values, backgroundColor: COLORS }] },
+    options: { responsive: true, animation: false, plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } } }
+  });
+}
+
+document.getElementById("regionFilter").addEventListener("change", e=>{
+  computeAndRender(e.target.value, document.getElementById("periodFilter").value);
+});
+document.getElementById("periodFilter").addEventListener("change", e=>{
+  computeAndRender(document.getElementById("regionFilter").value, e.target.value);
+});
+
+renderStaticCharts();
+computeAndRender("all","all");
+</script>
+</body>
+</html>
